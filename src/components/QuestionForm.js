@@ -1,33 +1,36 @@
-import React from "react";
-function QuestionItem({ question,onDelete,onAnswerChange }) {
-  const { id, prompt, answers, correctIndex } = question;
 
-  const options = answers.map((answer, index) => (
-    <option key={index} value={index}>
-      {answer}
-    </option>
-  ));
+import React, { useState } from "react";
 
-  function handleDelete() {
-    onDelete(id);
+const QuestionForm = () => {
+  const [formData, setFormData] = useState({
+    prompt: "",
+    answer1: "",
+    answer2: "",
+    answer3: "",
+    answer4: "",
+    correctIndex: ""
+  });
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log(formData);
+    fetch("http://localhost:4000/questions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt: formData.prompt,
+        answers: [
+          formData.answer1,
+          formData.answer2,
+          formData.answer3,
+          formData.answer4,
+        ],
+        correctIndex: parseInt(formData.correctIndex),
+      })
+    });
   }
-  function handleChange(event) {
-    onAnswerChange(id, parseInt(event.target.value));
-  }
+};
 
-  return (
-    <li>
-      <h4>Question {id}</h4>
-      <h5>Prompt: {prompt}</h5>
-      <label>
-        Correct Answer:
-        <select defaultValue={correctIndex}>{options}</select>
-        <select defaultValue={correctIndex} onChange={handleChange}>{options} </select>
-      </label>
-      <button>Delete Question</button>
-      <button onClick={handleDelete} >Delete Question</button>
-    </li>
-  );
-}
-
-export default QuestionItem;
+export default QuestionForm;
